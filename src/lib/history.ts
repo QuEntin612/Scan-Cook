@@ -3,7 +3,9 @@
 import { useMemo, useSyncExternalStore } from "react";
 import type { Recipe } from "./recipe";
 
-// Historique des 10 dernières recettes, gardé dans le navigateur (localStorage).
+// Deux listes de recettes gardées dans le navigateur (localStorage) :
+// - l'HISTORIQUE : les 10 dernières recettes générées (les plus anciennes disparaissent) ;
+// - les FAVORIS : les recettes choisies avec le cœur, gardées jusqu'à ce qu'on les retire.
 
 export type HistoryEntry = {
   id: string;
@@ -13,27 +15,8 @@ export type HistoryEntry = {
   recipe: Recipe;
 };
 
-const KEY = "scancook.history";
-const EVENT = "scancook-history-change";
-const MAX = 10;
+const NOT_READY = "__pas_encore_lu__";
 const EMPTY = "[]";
-
-function read(): string {
-  try {
-    return localStorage.getItem(KEY) ?? EMPTY;
-  } catch {
-    return EMPTY;
-  }
-}
-
-function write(entries: HistoryEntry[]) {
-  try {
-    localStorage.setItem(KEY, JSON.stringify(entries));
-    window.dispatchEvent(new Event(EVENT));
-  } catch {
-    // Stockage plein ou indisponible : on ignore, l'appli continue de marcher.
-  }
-}
 
 function parse(raw: string): HistoryEntry[] {
   try {
@@ -44,37 +27,71 @@ function parse(raw: string): HistoryEntry[] {
   }
 }
 
-export function addToHistory(entry: Omit<HistoryEntry, "id" | "date">) {
-  const list = parse(read());
-  const full: HistoryEntry = { ...entry, id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, date: new Date().toISOString() };
-  write([full, ...list].slice(0, MAX));
-}
+// Fabrique une liste sauvegardée sous une clé donnée, avec un nombre maximum d'éléments.
+function createListStore(key: string, max: number) {
+  const event = `${key}-change`;
 
-export function removeFromHistory(id: string) {
-  write(parse(read()).filter((e) => e.id !== id));
-}
+  const read = (): string => {
+    try {
+      return localStorage.getItem(key) ?? EMPTY;
+    } catch {
+      return EMPTY;
+    }
+  };
 
-export function clearHistory() {
-  write([]);
-}
+  const write = (entries: HistoryEntry[]) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(entries.slice(0, max)));
+      window.dispatchEvent(new Event(event));
+    } catch {
+      // Stockage plein ou indisponible : on ignore, l'appli continue de marcher.
+    }
+  };
 
-function subscribe(cb: () => void) {
-  window.addEventListener("storage", cb);
-  window.addEventListener(EVENT, cb);
-  return () => {
-    window.removeEventListener("storage", cb);
-    window.removeEventListener(EVENT, cb);
+  const subscribe = (cb: () => void) => {
+    window.addEventListener("storage", cb);
+    window.addEventListener(event, cb);
+    return () => {
+      window.removeEventListener("storage", cb);
+      window.removeEventListener(event, cb);
+    };
+  };
+
+  return {
+    list: () => parse(read()),
+    add: (entry: HistoryEntry) => write([entry, ...parse(read()).filter((e) => e.id !== entry.id)]),
+    remove: (id: string) => write(parse(read()).filter((e) => e.id !== id)),
+    clear: () => write([]),
+    useList() {
+      const raw = useSyncExternalStore(subscribe, read, () => NOT_READY);
+      const ready = raw !== NOT_READY;
+      const entries = useMemo(() => (ready ? parse(raw) : []), [raw, ready]);
+      return { ready, entries };
+    },
   };
 }
 
-const NOT_READY = "__pas_encore_lu__";
+const history = createListStore("scancook.history", 10);
+const favorites = createListStore("scancook.favorites", 50);
 
-export function useHistory() {
-  const raw = useSyncExternalStore(subscribe, read, () => NOT_READY);
-  const ready = raw !== NOT_READY;
-  const entries = useMemo(() => (ready ? parse(raw) : []), [raw, ready]);
-  return { ready, entries };
+// ----- Historique -----
+export function addToHistory(entry: Omit<HistoryEntry, "id" | "date">): HistoryEntry {
+  const full: HistoryEntry = {
+    ...entry,
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    date: new Date().toISOString(),
+  };
+  history.add(full);
+  return full;
 }
+export const removeFromHistory = history.remove;
+export const clearHistory = history.clear;
+export const useHistory = history.useList;
+
+// ----- Favoris -----
+export const addToFavorites = favorites.add;
+export const removeFromFavorites = favorites.remove;
+export const useFavorites = favorites.useList;
 
 export function formatDate(iso: string) {
   return new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });

@@ -5,7 +5,7 @@ import ProductCard from "@/components/scan/ProductCard";
 import RecipeCard from "@/components/recipe/RecipeCard";
 import { IconInfo, IconRefresh, IconScan } from "@/components/Icons";
 import { productWarnings } from "@/lib/allergens";
-import { addToHistory } from "@/lib/history";
+import { addToHistory, type HistoryEntry } from "@/lib/history";
 import type { Product } from "@/lib/product";
 import type { Profile } from "@/lib/profile";
 import type { RecipeResponse } from "@/lib/recipe";
@@ -18,7 +18,7 @@ export default function RecipeFlow({ product, profile, onReset }: { product: Pro
   const blocking = warnings.some((w) => w.level === "contient");
   const [confirmed, setConfirmed] = useState(!blocking);
   const [attempt, setAttempt] = useState<Attempt>({ n: 0, variant: 0, exclude: [] });
-  const [result, setResult] = useState<{ n: number; data: RecipeResponse } | null>(null);
+  const [result, setResult] = useState<{ n: number; data: RecipeResponse; entry?: HistoryEntry } | null>(null);
   const loading = confirmed && result?.n !== attempt.n;
 
   // Demande la recette au serveur à chaque nouvelle tentative.
@@ -33,12 +33,13 @@ export default function RecipeFlow({ product, profile, onReset }: { product: Pro
     })
       .then((r) => r.json() as Promise<RecipeResponse>)
       .then((data) => {
+        let entry: HistoryEntry | undefined;
         if (data.ok) {
           // On garde la recette dans l'historique (10 dernières).
           const { name, brand, image, code } = product;
-          addToHistory({ mode: data.mode, product: { name, brand, image, code }, recipe: data.recipe });
+          entry = addToHistory({ mode: data.mode, product: { name, brand, image, code }, recipe: data.recipe });
         }
-        setResult({ n: attempt.n, data });
+        setResult({ n: attempt.n, data, entry });
       })
       .catch((e: unknown) => {
         if (e instanceof Error && e.name === "AbortError") return;
@@ -98,7 +99,7 @@ export default function RecipeFlow({ product, profile, onReset }: { product: Pro
         </section>
       )}
 
-      {!loading && result?.data.ok && <RecipeCard key={attempt.n} recipe={result.data.recipe} mode={result.data.mode} />}
+      {!loading && result?.data.ok && <RecipeCard key={attempt.n} recipe={result.data.recipe} mode={result.data.mode} entry={result.entry} />}
 
       <div className="actions">
         {!loading && result?.data.ok && (

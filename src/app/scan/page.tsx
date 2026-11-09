@@ -94,6 +94,12 @@ export default function ScanPage() {
     else searchByName(value);
   };
 
+  // Choisir un produit annule la recherche encore en cours (sinon sa réponse ramènerait la liste).
+  const choose = (product: Product) => {
+    requestId.current++;
+    setView({ kind: "found", product });
+  };
+
   const reset = () => {
     requestId.current++;
     setView({ kind: "idle" });
@@ -203,13 +209,13 @@ export default function ScanPage() {
           <h2 className="h-small">Quel produit ?</h2>
           <ul className="choose-list">
             <li>
-              <button type="button" className="choose-item" onClick={() => setView({ kind: "found", product: manualProduct(view.query) })}>
+              <button type="button" className="choose-item" onClick={() => choose(manualProduct(view.query))}>
                 <ProductCard product={manualProduct(view.query)} />
               </button>
             </li>
             {view.results.map((p) => (
               <li key={p.code ?? p.name}>
-                <button type="button" className="choose-item" onClick={() => setView({ kind: "found", product: p })}>
+                <button type="button" className="choose-item" onClick={() => choose(p)}>
                   <ProductCard product={p} />
                 </button>
               </li>

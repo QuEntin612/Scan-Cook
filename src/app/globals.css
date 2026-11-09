@@ -1247,3 +1247,108 @@ body {
   white-space: nowrap;
   font-size: 0.85rem;
 }
+
+/* ===== Favoris (cœur) ===== */
+.recipe-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.fav-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 999px;
+  border: 2px solid var(--border);
+  background: var(--white);
+  color: var(--muted);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.fav-btn:hover {
+  border-color: var(--orange);
+  color: var(--orange-text);
+}
+
+.fav-btn.on {
+  color: var(--orange);
+  border-color: var(--orange);
+  background: #fdf0e3;
+}
+
+.fav-btn.on svg {
+  animation: fav-pop 0.3s ease-out;
+}
+
+@keyframes fav-pop {
+  50% { transform: scale(1.3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fav-btn.on svg { animation: none; }
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  padding-right: 12px;
+}
+
+.history-row .history-head {
+  flex: 1;
+  min-width: 0;
+  padding-right: 6px;
+}
+
+/* Onglets Favoris / Historique */
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 12px;
+  border-radius: var(--radius);
+  background: var(--white);
+  border: 1px solid var(--border);
+}
+
+.segmented button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 46px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.segmented button[aria-selected="true"] {
+  background: var(--green);
+  color: var(--white);
+}
+
+.list-intro {
+  margin: 0 4px 12px;
+  font-size: 0.92rem;
+}
+
+.empty svg {
+  vertical-align: -3px;
+  color: var(--orange);
+}

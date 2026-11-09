@@ -4,9 +4,11 @@ import { useState } from "react";
 import { IconBulb, IconCheck, IconClock, IconWallet, IconFlame, IconInfo, IconUsers } from "@/components/Icons";
 import { fr } from "@/lib/profile";
 import type { Recipe } from "@/lib/recipe";
+import type { HistoryEntry } from "@/lib/history";
+import FavoriteButton from "./FavoriteButton";
 
 // Fiche recette : nom, badges, macros, liste de courses à cocher, étapes, astuce.
-export default function RecipeCard({ recipe, mode }: { recipe: Recipe; mode: "claude" | "demo" }) {
+export default function RecipeCard({ recipe, mode, entry }: { recipe: Recipe; mode: "claude" | "demo"; entry?: HistoryEntry }) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const { proteines, glucides, lipides } = recipe.macros;
   // Part de chaque macro dans les calories (1 g protéines/glucides = 4 kcal, 1 g lipides = 9 kcal).
@@ -17,7 +19,10 @@ export default function RecipeCard({ recipe, mode }: { recipe: Recipe; mode: "cl
   return (
     <article className="card recipe">
       <p className="eyebrow">{mode === "claude" ? "Recette créée par Claude" : "Recette du mode démo"}</p>
-      <h2 className="recipe-title">{recipe.nom}</h2>
+      <div className="recipe-head">
+        <h2 className="recipe-title">{recipe.nom}</h2>
+        {entry && <FavoriteButton entry={entry} />}
+      </div>
 
       <ul className="badges" aria-label="En bref">
         <li className="badge"><IconClock /> {recipe.tempsTotal} min</li>

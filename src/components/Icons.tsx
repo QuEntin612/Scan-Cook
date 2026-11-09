@@ -57,3 +57,8 @@ export const IconBulb = ({ size = 18 }: P) => (
 export const IconBook = ({ size = 22 }: P) => (
   <svg {...base(size)}><path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5zM5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6M9 10.5h4" /></svg>
 );
+export const IconHeart = ({ size = 22, filled = false }: P & { filled?: boolean }) => (
+  <svg {...base(size)} fill={filled ? "currentColor" : "none"}>
+    <path d="M12 20.5s-7.5-4.6-9.2-9.4C1.7 7.8 3.9 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.4 0 5.6 3.3 4.5 6.6-1.7 4.8-9.2 9.4-9.2 9.4z" />
+  </svg>
+);
