@@ -5,6 +5,7 @@ import ProductCard from "@/components/scan/ProductCard";
 import RecipeCard from "@/components/recipe/RecipeCard";
 import { IconInfo, IconRefresh, IconScan } from "@/components/Icons";
 import { productWarnings } from "@/lib/allergens";
+import { addToHistory } from "@/lib/history";
 import type { Product } from "@/lib/product";
 import type { Profile } from "@/lib/profile";
 import type { RecipeResponse } from "@/lib/recipe";
@@ -31,7 +32,14 @@ export default function RecipeFlow({ product, profile, onReset }: { product: Pro
       signal: ctrl.signal,
     })
       .then((r) => r.json() as Promise<RecipeResponse>)
-      .then((data) => setResult({ n: attempt.n, data }))
+      .then((data) => {
+        if (data.ok) {
+          // On garde la recette dans l'historique (10 dernières).
+          const { name, brand, image, code } = product;
+          addToHistory({ mode: data.mode, product: { name, brand, image, code }, recipe: data.recipe });
+        }
+        setResult({ n: attempt.n, data });
+      })
       .catch((e: unknown) => {
         if (e instanceof Error && e.name === "AbortError") return;
         setResult({ n: attempt.n, data: { ok: false, error: "Pas de connexion internet ? Réessaie dans un instant." } });

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Scanner from "@/components/scan/Scanner";
 import ProductCard from "@/components/scan/ProductCard";
 import { IconInfo, IconScan } from "@/components/Icons";
@@ -9,6 +9,7 @@ import RecipeFlow from "@/components/recipe/RecipeFlow";
 import { isBarcode, manualProduct, type Product } from "@/lib/product";
 import { computeNeeds, fr, GOALS } from "@/lib/profile";
 import { useProfile } from "@/lib/useProfile";
+import { useHistory } from "@/lib/history";
 
 type View =
   | { kind: "idle" }
@@ -24,6 +25,12 @@ export default function ScanPage() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [text, setText] = useState("");
   const requestId = useRef(0); // évite qu'une vieille réponse écrase une plus récente
+  const { entries: recent } = useHistory();
+
+  // À chaque changement d'écran, on remonte en haut de la page.
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [view.kind]);
 
   if (!ready) return <p className="muted loading">Chargement…</p>;
   if (!profile)
@@ -142,6 +149,22 @@ export default function ScanPage() {
             </p>
           )}
           {manualForm}
+          {recent.length > 0 && (
+            <section className="card" aria-labelledby="recent-title">
+              <div className="recent-head">
+                <h2 id="recent-title">Tes dernières recettes</h2>
+                <Link href="/historique">Tout voir</Link>
+              </div>
+              <ul className="recent-list">
+                {recent.slice(0, 3).map((e) => (
+                  <li key={e.id}>
+                    <span>{e.recipe.nom}</span>
+                    <span className="muted">{fr(e.recipe.caloriesParPortion)} kcal</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </>
       )}
 

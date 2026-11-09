@@ -1041,3 +1041,209 @@ input[type="range"]:focus-visible::-webkit-slider-thumb {
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* ===== Navigation du bas ===== */
+body {
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+
+.tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 56px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tab.active {
+  color: var(--green-dark);
+  background: var(--green-light);
+}
+
+.header-slogan {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--orange-text);
+  text-align: right;
+}
+
+@media (max-width: 360px) {
+  .header-slogan {
+    display: none;
+  }
+}
+
+/* ===== Historique ===== */
+.history {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.history-item {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.history-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  min-height: 72px;
+}
+
+.history-thumb {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--muted);
+}
+
+.history-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--white);
+}
+
+.history-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.history-name {
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.history-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-right: 2.5px solid var(--muted);
+  border-bottom: 2.5px solid var(--muted);
+  transform: rotate(45deg);
+  margin: 0 6px 4px;
+  transition: transform 0.2s;
+}
+
+.chevron.open {
+  transform: rotate(-135deg);
+  margin-bottom: -4px;
+}
+
+.history-body {
+  padding: 0 10px 10px;
+}
+
+.history-body .recipe {
+  margin-bottom: 4px;
+  border: none;
+  background: var(--bg);
+}
+
+.history-body .btn-link {
+  padding: 0 10px;
+}
+
+.empty .btn-primary {
+  margin-top: 12px;
+}
+
+/* Raccourci "dernières recettes" sur l'écran de scan */
+.recent-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.recent-head h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.recent-head a {
+  font-weight: 600;
+  color: var(--green-dark);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.recent-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.recent-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.recent-list li:first-child {
+  border-top: none;
+}
+
+.recent-list .muted {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
