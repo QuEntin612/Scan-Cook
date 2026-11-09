@@ -1,15 +1,20 @@
-// Page d'accueil provisoire (étape 1). Le questionnaire arrivera à l'étape 2.
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Questionnaire from "@/components/questionnaire/Questionnaire";
+import { DEFAULT_PROFILE } from "@/lib/profile";
+import { useProfile } from "@/lib/useProfile";
+
+// Accueil : questionnaire la première fois, sinon on va directement au scan.
 export default function Home() {
-  return (
-    <section className="card hero">
-      <h1>
-        Scan <span className="amp">&amp;</span> Cook
-      </h1>
-      <p className="slogan">Un bip, une recette.</p>
-      <p className="muted">
-        Étape 1 terminée : le projet fonctionne. Le questionnaire arrive à
-        l&apos;étape 2.
-      </p>
-    </section>
-  );
+  const router = useRouter();
+  const { ready, profile } = useProfile();
+
+  useEffect(() => {
+    if (ready && profile) router.replace("/scan");
+  }, [ready, profile, router]);
+
+  if (!ready || profile) return <p className="muted loading">Chargement…</p>;
+  return <Questionnaire initial={DEFAULT_PROFILE} isEdit={false} />;
 }
