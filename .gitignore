@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Clé API secrète : ne JAMAIS envoyer ce fichier sur GitHub
+.env.local
