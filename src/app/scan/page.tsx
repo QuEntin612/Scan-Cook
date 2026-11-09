@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import Scanner from "@/components/scan/Scanner";
 import ProductCard from "@/components/scan/ProductCard";
 import { IconInfo, IconScan } from "@/components/Icons";
-import { productWarnings } from "@/lib/allergens";
+import RecipeFlow from "@/components/recipe/RecipeFlow";
 import { isBarcode, manualProduct, type Product } from "@/lib/product";
 import { computeNeeds, fr, GOALS } from "@/lib/profile";
 import { useProfile } from "@/lib/useProfile";
@@ -203,50 +203,8 @@ export default function ScanPage() {
       )}
 
       {view.kind === "found" && (
-        <FoundProduct product={view.product} diets={profile.diets} onReset={reset} />
+        <RecipeFlow product={view.product} profile={profile} onReset={reset} />
       )}
     </div>
-  );
-}
-
-function FoundProduct({
-  product,
-  diets,
-  onReset,
-}: {
-  product: Product;
-  diets: Parameters<typeof productWarnings>[1];
-  onReset: () => void;
-}) {
-  const warnings = productWarnings(product, diets);
-  return (
-    <>
-      <section className="card">
-        <p className="eyebrow">Produit trouvé</p>
-        <ProductCard product={product} />
-      </section>
-      {warnings.length > 0 && (
-        <section className="alert warn" role="alert">
-          <p className="alert-title">
-            <IconInfo /> Attention, d&apos;après tes réponses :
-          </p>
-          <ul>
-            {warnings.map((w) => (
-              <li key={w.text}>{w.text}</li>
-            ))}
-          </ul>
-        </section>
-      )}
-      <section className="card center">
-        <div className="spinner" aria-hidden="true" />
-        <p>
-          <strong>Je te prépare une recette…</strong>
-        </p>
-        <p className="muted small">(La génération de la recette arrive à l&apos;étape 4.)</p>
-      </section>
-      <button type="button" className="btn-primary" onClick={onReset}>
-        Scanner un autre produit
-      </button>
-    </>
   );
 }
