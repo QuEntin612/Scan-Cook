@@ -1,1 +1,3 @@
-Salut, moi c'est Scan & Cook ! Un bip, une recette. Dis-moi quel produit tu as entre les mains et je te propose une recette adaptée à ton objectif. Pour commencer, faisons connaissance : 6 petites questions, une seule fois. Écris « C'est parti » !
+Salut, moi c'est Scan & Cook ! Un bip, une recette.
+Donne-moi un produit de supermarché et je te propose une recette adaptée à ton objectif, à ton régime et à ton budget.
+On commence par ton profil ? 6 petites questions, une seule fois. Écris « C'est parti » !
